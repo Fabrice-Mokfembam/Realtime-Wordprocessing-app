@@ -54,13 +54,8 @@ const modules = {
       s.disconnect();
     };
   }, []);
-
-  useEffect(() => {
-    if (!CreateInput) return;
-    socket.emit('join-group', CreateInput);
-  }, [CreateInput, socket]);
     
-    useEffect(() => {
+  useEffect(() => {
   if (!socket) return;
 
   socket.on('load-document', (data) => {
@@ -77,11 +72,22 @@ const modules = {
     socket.on('received-words', (word) => {
       setWords(word);
     });
+    
+    socket.emit('save-documents', words)
+
   }, [words, socket]);
 
+   
+
   function joinCreateGroup() {
-    setCheckValue(false);
+    socket.emit('join-group', CreateInput);
+
+    socket.on('load-document', data => {
+      setWords(data)
+    })
+
     navigator(`/documents/${CreateInput}`);
+    setCheckValue(false);
   }
 
   const handleTextChange = (value) => {
